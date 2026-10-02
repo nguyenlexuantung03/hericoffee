@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>hericoffee</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);--bg:#f1f1f1;--card:#fff;--line:#d0d0d0;--tx:#222;--mut:#777;--ac:#6b4a2f;--onac:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b1b;--card:#272727;--line:#444;--tx:#eee;--mut:#999;--ac:#c49a6c;--onac:#1b1b1b}}
+:root[data-theme="dark"]{--bg:#1b1b1b;--card:#272727;--line:#444;--tx:#eee;--mut:#999;--ac:#c49a6c;--onac:#1b1b1b}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Arial,Helvetica,sans-serif}
+body{max-width:620px;margin:0 auto;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px}
+h1{font-size:20px;margin:0}
+.date{font-size:12px;color:var(--mut)}
+.top button{padding:8px 12px;margin-left:6px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:4px;font-size:13px}
+.top button.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-bottom:1px solid var(--line);padding:8px 12px}
+.row:first-of-type{border-top:1px solid var(--line)}
+.nm{font-size:16px}
+.pr{font-size:13px;color:var(--mut)}
+.ctl{display:flex;align-items:center}
+.ctl button{width:44px;height:44px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:22px;border-radius:4px}
+.ctl .plus{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.ctl span{min-width:40px;text-align:center;font-size:20px}
+.ed{display:none;gap:6px}
+.edit .ed{display:flex}
+.edit .ctl{display:none}
+.ed label{font-size:11px;color:var(--mut);display:block}
+.ed input{width:84px;padding:6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--tx);font-size:14px}
+.sep{padding:14px 12px 6px;font-size:13px;color:var(--mut)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:2px solid var(--ac);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))}
+.bar div{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.bar small{display:block;font-size:11px;color:var(--mut)}
+.bar b{font-size:15px}
+.bar .l b{color:var(--ac);font-size:17px}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>hericoffee</h1><div class="date" id="date"></div></div>
+  <div class="top"><button id="bEdit">Sửa giá</button><button id="bReset">Xóa số</button></div>
+</header>
+<div id="list"></div>
+<div class="bar"><div>
+  <span><small>Số ly</small><b id="tCups">0</b></span>
+  <span><small>Tiền bán</small><b id="tRev">0</b></span>
+  <span><small>Giá vốn</small><b id="tCost">0</b></span>
+  <span class="l"><small>Lãi</small><b id="tProfit">0</b></span>
+</div></div>
+<script>
+var DEF=[
+ {n:"Cafe muối",p:15000,c:3944},{n:"Cf sữa tươi",p:15000,c:6568},
+ {n:"Bạc xỉu",p:16000,c:6171},{n:"Cf đen",p:12000,c:4250},
+ {n:"Cf sữa",p:15000,c:5655},{n:"Cacao",p:15000,c:7347},
+ {n:"Kem muối thêm",p:3000,c:1119},{n:"Cf đen thêm",p:3000,c:1417}
+];
+var KEY="pos_cafe_v1",S=null,editing=false;
+function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function load(){
+  try{var r=localStorage.getItem(KEY);if(r){S=JSON.parse(r)}}catch(e){}
+  if(!S||!S.items||S.items.length!==DEF.length){S={day:today(),items:DEF.map(function(d){return{n:d.n,p:d.p,c:d.c,q:0}})}}
+  if(S.day!==today()){S.items.forEach(function(i){i.q=0});S.day=today()}
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function f(n){return Math.round(n).toLocaleString("vi-VN")}
+function render(){
+  var l=document.getElementById("list");l.innerHTML="";
+  S.items.forEach(function(it,i){
+    if(i===6){var s=document.createElement("div");s.className="sep";s.textContent="Bán thêm";l.appendChild(s)}
+    var r=document.createElement("div");r.className="row"+(editing?" edit":"");
+    r.innerHTML='<div><div class="nm">'+it.n+'</div><div class="pr">'+f(it.p)+'đ</div></div>'
+      +'<div class="ctl"><button aria-label="Trừ">−</button><span>'+it.q+'</span><button class="plus" aria-label="Thêm">+</button></div>'
+      +'<div class="ed"><div><label>Giá bán</label><input type="number" inputmode="numeric" value="'+it.p+'" data-k="p"></div>'
+      +'<div><label>Giá vốn</label><input type="number" inputmode="numeric" value="'+it.c+'" data-k="c"></div></div>';
+    var b=r.querySelectorAll(".ctl button");
+    b[0].onclick=function(){if(it.q>0){it.q--;save();render()}};
+    b[1].onclick=function(){it.q++;save();render()};
+    r.querySelectorAll("input").forEach(function(inp){
+      inp.onchange=function(){it[inp.dataset.k]=Math.max(0,+inp.value||0);save();totals()};
+    });
+    l.appendChild(r);
+  });
+  totals();
+}
+function totals(){
+  var q=0,r=0,c=0;
+  S.items.forEach(function(i){q+=i.q;r+=i.q*i.p;c+=i.q*i.c});
+  document.getElementById("tCups").textContent=q;
+  document.getElementById("tRev").textContent=f(r);
+  document.getElementById("tCost").textContent=f(c);
+  document.getElementById("tProfit").textContent=f(r-c);
+}
+document.getElementById("bEdit").onclick=function(){editing=!editing;this.classList.toggle("on",editing);this.textContent=editing?"Xong":"Sửa giá";render()};
+document.getElementById("bReset").onclick=function(){if(confirm("Xóa hết số ly hôm nay?")){S.items.forEach(function(i){i.q=0});save();render()}};
+document.getElementById("date").textContent=new Date().toLocaleDateString("vi-VN",{weekday:"long",day:"numeric",month:"numeric",year:"numeric"});
+load();render();
+</script>
+</body>
+</html>
