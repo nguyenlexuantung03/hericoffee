@@ -3,98 +3,181 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>hericoffee</title>
+<title>Heri Coffee</title>
 <style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);--bg:#f1f1f1;--card:#fff;--line:#d0d0d0;--tx:#222;--mut:#777;--ac:#6b4a2f;--onac:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1b1b;--card:#272727;--line:#444;--tx:#eee;--mut:#999;--ac:#c49a6c;--onac:#1b1b1b}}
-:root[data-theme="dark"]{--bg:#1b1b1b;--card:#272727;--line:#444;--tx:#eee;--mut:#999;--ac:#c49a6c;--onac:#1b1b1b}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f6f3ee;--card:#fff;--line:#ddd5ca;--tx:#2a211b;--mut:#7a6f65;--ac:#7a4a26;--hd:#5b3d2b;--tint:#f5e6d3;--onhd:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1613;--card:#252019;--line:#3b332b;--tx:#eee6dc;--mut:#a99e92;--ac:#dba26b;--hd:#3a2b21;--tint:#3d2f22}}
+:root[data-theme="dark"]{--bg:#1a1613;--card:#252019;--line:#3b332b;--tx:#eee6dc;--mut:#a99e92;--ac:#dba26b;--hd:#3a2b21;--tint:#3d2f22;--onhd:#fff}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--tx);font-family:Arial,Helvetica,sans-serif}
-body{max-width:620px;margin:0 auto;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
-header{display:flex;justify-content:space-between;align-items:center;padding:12px}
-h1{font-size:20px;margin:0}
-.date{font-size:12px;color:var(--mut)}
-.top button{padding:8px 12px;margin-left:6px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:4px;font-size:13px}
-.top button.on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
-.row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-bottom:1px solid var(--line);padding:8px 12px}
-.row:first-of-type{border-top:1px solid var(--line)}
-.nm{font-size:16px}
-.pr{font-size:13px;color:var(--mut)}
-.ctl{display:flex;align-items:center}
-.ctl button{width:44px;height:44px;border:1px solid var(--line);background:var(--card);color:var(--tx);font-size:22px;border-radius:4px}
-.ctl .plus{background:var(--ac);color:var(--onac);border-color:var(--ac)}
-.ctl span{min-width:40px;text-align:center;font-size:20px}
-.ed{display:none;gap:6px}
-.edit .ed{display:flex}
-.edit .ctl{display:none}
-.ed label{font-size:11px;color:var(--mut);display:block}
-.ed input{width:84px;padding:6px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--tx);font-size:14px}
-.sep{padding:14px 12px 6px;font-size:13px;color:var(--mut)}
-.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:2px solid var(--ac);padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px))}
-.bar div{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
-.bar small{display:block;font-size:11px;color:var(--mut)}
-.bar b{font-size:15px}
-.bar .l b{color:var(--ac);font-size:17px}
+html{background:var(--hd)}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--tx);font-family:Arial,sans-serif;font-size:15px}
+.top{background:var(--hd);color:var(--onhd);padding:12px 14px 0}
+.top-in{max-width:680px;margin:0 auto}
+h1{font-size:19px;margin:0 0 10px}
+.tabs{display:flex;gap:4px}
+.tabs button{flex:1;padding:10px;border:0;background:transparent;color:var(--onhd);opacity:.7;font-size:14px;border-radius:8px 8px 0 0}
+.tabs button.on{background:var(--bg);color:var(--tx);opacity:1;font-weight:bold}
+main{max-width:680px;margin:0 auto;padding:12px 12px 30px}
+button,input{font-family:inherit}
+.datebar{display:flex;gap:6px;margin-bottom:10px}
+.datebar button,.tool button{border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:6px;padding:0 12px;height:40px;font-size:14px}
+.datebar input{flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--tx);padding:0 8px;font-size:14px}
+.kpi{display:grid;gap:8px;margin-bottom:12px}
+.k4{grid-template-columns:repeat(4,1fr)}.k3{grid-template-columns:repeat(3,1fr)}
+.kpi div{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center}
+.kpi small{display:block;font-size:11px;color:var(--mut)}
+.kpi b{font-size:15px}
+.kpi .lai{background:var(--ac);border-color:var(--ac);color:var(--card)}
+.kpi .lai small{color:inherit;opacity:.85}
+.kpi .lai b{font-size:17px}
+.box{border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%}
+th{background:var(--hd);color:var(--onhd);font-size:13px;padding:8px 4px}
+td{padding:5px;border-top:1px solid var(--line);text-align:center}
+td:first-child,th:first-child{text-align:left;padding-left:10px}
+tbody tr:nth-child(even){background:var(--bg)}
+.c{display:flex;gap:3px}
+.c button{height:44px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:6px;font-size:16px}
+.c .n{flex:1;font-size:18px}.c .m{width:26px;color:var(--mut)}
+.c .n.on{background:var(--tint);border-color:var(--ac);color:var(--ac);font-weight:bold}
+.tool{display:flex;gap:8px}
+input.e{width:100%;padding:7px;font-size:14px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--tx)}
+h3{font-size:14px;margin:16px 0 8px}
+.mon{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.mon b{font-size:17px}
+.mon button{width:44px;height:40px;border:1px solid var(--line);background:var(--card);color:var(--tx);border-radius:6px;font-size:18px}
+.chart{display:flex;align-items:flex-end;gap:2px;height:150px;padding:10px 8px 4px}
+.bw{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}
+.bw i{display:block;width:100%;background:var(--ac);border-radius:2px 2px 0 0;min-height:2px;opacity:.9}
+.bw i.z{background:var(--line)}
+.bw em{font-style:normal;font-size:9px;color:var(--mut);height:12px;line-height:12px}
+.rank{padding:8px 10px}
+.rk{display:flex;align-items:center;gap:8px;font-size:13px;margin:5px 0}
+.rk span:first-child{width:104px;flex:none}
+.rk div{flex:1;height:10px;background:var(--bg);border-radius:5px}
+.rk div i{display:block;height:100%;background:var(--ac);border-radius:5px}
+.rk span:last-child{width:46px;text-align:right;color:var(--mut)}
+.dt td{font-size:13px;padding:8px 4px}.dt td:first-child{white-space:nowrap}
+.dt tr[data-a]{cursor:pointer}
+.dt tfoot td{font-weight:bold;background:var(--tint)}
+.dt td:nth-child(n+2){text-align:right}.dt td:last-child{padding-right:10px;font-weight:bold}
+.note{font-size:12px;color:var(--mut);line-height:1.5;margin:10px 0}
 </style>
 </head>
 <body>
-<header>
-  <div><h1>hericoffee</h1><div class="date" id="date"></div></div>
-  <div class="top"><button id="bEdit">Sửa giá</button><button id="bReset">Xóa số</button></div>
-</header>
-<div id="list"></div>
-<div class="bar"><div>
-  <span><small>Số ly</small><b id="tCups">0</b></span>
-  <span><small>Tiền bán</small><b id="tRev">0</b></span>
-  <span><small>Giá vốn</small><b id="tCost">0</b></span>
-  <span class="l"><small>Lãi</small><b id="tProfit">0</b></span>
-</div></div>
+<div class="top"><div class="top-in"><h1>Heri Coffee</h1>
+<div class="tabs"><button data-t="sell">Bán hàng</button><button data-t="stat">Thống kê</button></div></div></div>
+<main id="app"></main>
 <script>
-var DEF=[
- {n:"Cafe muối",p:15000,c:3944},{n:"Cf sữa tươi",p:15000,c:6568},
- {n:"Bạc xỉu",p:16000,c:6171},{n:"Cf đen",p:12000,c:4250},
- {n:"Cf sữa",p:15000,c:5655},{n:"Cacao",p:15000,c:7347},
- {n:"Kem muối thêm",p:3000,c:1119},{n:"Cf đen thêm",p:3000,c:1417}
-];
-var KEY="pos_cafe_v1",S=null,editing=false;
-function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
-function load(){
-  try{var r=localStorage.getItem(KEY);if(r){S=JSON.parse(r)}}catch(e){}
-  if(!S||!S.items||S.items.length!==DEF.length){S={day:today(),items:DEF.map(function(d){return{n:d.n,p:d.p,c:d.c,q:0}})}}
-  if(S.day!==today()){S.items.forEach(function(i){i.q=0});S.day=today()}
-}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var KEY="pos_cafe_v3",S=null,tab="sell",editing=false,A=document.getElementById("app");
+function pad(n){return n<10?"0"+n:""+n}
+function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
+var cur=iso(new Date()),mon=cur.slice(0,7);
 function f(n){return Math.round(n).toLocaleString("vi-VN")}
-function render(){
-  var l=document.getElementById("list");l.innerHTML="";
-  S.items.forEach(function(it,i){
-    if(i===6){var s=document.createElement("div");s.className="sep";s.textContent="Bán thêm";l.appendChild(s)}
-    var r=document.createElement("div");r.className="row"+(editing?" edit":"");
-    r.innerHTML='<div><div class="nm">'+it.n+'</div><div class="pr">'+f(it.p)+'đ</div></div>'
-      +'<div class="ctl"><button aria-label="Trừ">−</button><span>'+it.q+'</span><button class="plus" aria-label="Thêm">+</button></div>'
-      +'<div class="ed"><div><label>Giá bán</label><input type="number" inputmode="numeric" value="'+it.p+'" data-k="p"></div>'
-      +'<div><label>Giá vốn</label><input type="number" inputmode="numeric" value="'+it.c+'" data-k="c"></div></div>';
-    var b=r.querySelectorAll(".ctl button");
-    b[0].onclick=function(){if(it.q>0){it.q--;save();render()}};
-    b[1].onclick=function(){it.q++;save();render()};
-    r.querySelectorAll("input").forEach(function(inp){
-      inp.onchange=function(){it[inp.dataset.k]=Math.max(0,+inp.value||0);save();totals()};
-    });
-    l.appendChild(r);
+function k(n){return (n/1000)+"k"}
+function vn(s){return s.slice(8)+"/"+s.slice(5,7)}
+function def(){return{sizes:[{n:"Nhỏ",p:12000,f:0.75},{n:"Vừa",p:15000,f:1},{n:"Lớn",p:22000,f:1.5}],
+ drinks:[["Cafe muối",3944],["Cf sữa tươi",6568],["Bạc xỉu",6171],["Cf đen",4250],["Cf sữa",5655],["Cacao",7347]].map(function(d){return{n:d[0],c:d[1]}}),
+ tops:[{n:"Kem muối thêm",p:3000,c:1119},{n:"Cf đen thêm",p:3000,c:1417}],days:{}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){
+  try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+  if(!S||!S.days){S=def();migrate()}
+}
+function migrate(){
+  try{var o=JSON.parse(localStorage.getItem("pos_cafe_v2"));if(!o||!o.sizes)return;
+    S.sizes=o.sizes;o.drinks.forEach(function(d,i){S.drinks[i].c=d.c});o.tops.forEach(function(t,i){S.tops[i].p=t.p;S.tops[i].c=t.c});
+    var p=o.day.split("-"),key=p[0]+"-"+pad(+p[1])+"-"+pad(+p[2]),old=cur;cur=key;
+    put({d:o.drinks.map(function(d){return d.q}),t:o.tops.map(function(t){return t.q})});cur=old;
+  }catch(e){}
+}
+function day(){return S.days[cur]||{d:S.drinks.map(function(){return[0,0,0]}),t:S.tops.map(function(){return 0})}}
+function calc(r){
+  var q=0,rev=0,c=0;
+  S.drinks.forEach(function(dr,i){S.sizes.forEach(function(s,j){var n=r.d[i][j];q+=n;rev+=n*s.p;c+=n*dr.c*s.f})});
+  S.tops.forEach(function(t,i){var n=r.t[i];q+=n;rev+=n*t.p;c+=n*t.c});
+  r.q=q;r.r=rev;r.c=c;return r;
+}
+function put(r){calc(r);if(r.q)S.days[cur]=r;else delete S.days[cur];save()}
+function cell(a,q,i,j){
+  return '<td><div class="c"><button class="n'+(q?' on':'')+'" data-a="'+a+'" data-i="'+i+'" data-j="'+j+'">'+q+'</button><button class="m" data-a="'+a+'m" data-i="'+i+'" data-j="'+j+'" aria-label="Trừ">−</button></div></td>';
+}
+function sell(){
+  var r=calc(day()),h='';
+  h+='<div class="datebar"><button data-a="dd" data-n="-1">‹</button><input type="date" id="dt" value="'+cur+'"><button data-a="dd" data-n="1">›</button><button data-a="today">Hôm nay</button></div>';
+  h+='<div class="kpi k4"><div><small>Số ly</small><b>'+r.q+'</b></div><div><small>Tiền bán</small><b>'+f(r.r)+'</b></div><div><small>Giá vốn</small><b>'+f(r.c)+'</b></div><div class="lai"><small>Lãi</small><b>'+f(r.r-r.c)+'</b></div></div>';
+  if(!editing){
+    h+='<div class="box"><table><thead><tr><th>Món</th>'+S.sizes.map(function(s){return '<th>'+s.n+' '+k(s.p)+'</th>'}).join('')+'</tr></thead><tbody>';
+    S.drinks.forEach(function(d,i){h+='<tr><td>'+d.n+'</td>'+S.sizes.map(function(s,j){return cell('p',r.d[i][j],i,j)}).join('')+'</tr>'});
+    h+='</tbody></table></div><div class="box"><table><thead><tr><th>Bán thêm</th><th>Số lượng</th></tr></thead><tbody>';
+    S.tops.forEach(function(t,i){h+='<tr><td>'+t.n+' '+k(t.p)+'</td>'+cell('t',r.t[i],i,0)+'</tr>'});
+    h+='</tbody></table></div>';
+  }else{
+    h+='<div class="box"><table><thead><tr><th>Size</th><th>Giá bán</th><th>Hệ số vốn</th></tr></thead><tbody>';
+    S.sizes.forEach(function(s,i){h+='<tr><td>'+s.n+'</td><td><input class="e" inputmode="numeric" value="'+s.p+'" data-f="sp" data-i="'+i+'"></td><td><input class="e" inputmode="decimal" value="'+s.f+'" data-f="sf" data-i="'+i+'"></td></tr>'});
+    h+='</tbody></table></div><div class="box"><table><thead><tr><th>Món</th><th>Giá bán</th><th>Giá vốn</th></tr></thead><tbody>';
+    S.drinks.forEach(function(d,i){h+='<tr><td>'+d.n+'</td><td>theo size</td><td><input class="e" inputmode="numeric" value="'+d.c+'" data-f="dc" data-i="'+i+'"></td></tr>'});
+    S.tops.forEach(function(t,i){h+='<tr><td>'+t.n+'</td><td><input class="e" inputmode="numeric" value="'+t.p+'" data-f="tp" data-i="'+i+'"></td><td><input class="e" inputmode="numeric" value="'+t.c+'" data-f="tc" data-i="'+i+'"></td></tr>'});
+    h+='</tbody></table></div><p class="note">Giá vốn đồ uống là của size vừa, size nhỏ/lớn nhân theo hệ số. Đổi giá chỉ tính lại ngày đang xem, các ngày cũ giữ nguyên.</p>';
+  }
+  return h+'<div class="tool"><button data-a="edit">'+(editing?'Xong':'Sửa giá')+'</button><button data-a="clr">Xóa số ngày này</button></div>';
+}
+function stat(){
+  var y=+mon.slice(0,4),m=+mon.slice(5,7),n=new Date(y,m,0).getDate(),Q=0,R=0,C=0,nd=0,max=1;
+  var dc=S.drinks.map(function(){return 0}),sc=[0,0,0],tc=S.tops.map(function(){return 0}),rows=[];
+  Object.keys(S.days).sort().forEach(function(key){
+    if(key.slice(0,7)!==mon)return;var r=S.days[key];nd++;Q+=r.q;R+=r.r;C+=r.c;rows.push(key);max=Math.max(max,r.r-r.c);
+    r.d.forEach(function(a,i){a.forEach(function(v,j){dc[i]+=v;sc[j]+=v})});r.t.forEach(function(v,i){tc[i]+=v});
   });
-  totals();
+  var h='<div class="mon"><button data-a="mm" data-n="-1">‹</button><b>Tháng '+m+'/'+y+'</b><button data-a="mm" data-n="1">›</button></div>';
+  if(!nd)return h+'<p class="note">Chưa có số liệu trong tháng này. Qua tab Bán hàng bấm số ly, số liệu mỗi ngày sẽ tự lưu.</p>';
+  h+='<div class="kpi k3"><div><small>Doanh thu</small><b>'+f(R)+'</b></div><div><small>Giá vốn</small><b>'+f(C)+'</b></div><div class="lai"><small>Lãi</small><b>'+f(R-C)+'</b></div>'
+    +'<div><small>Số ly</small><b>'+Q+'</b></div><div><small>Số ngày bán</small><b>'+nd+'</b></div><div><small>Lãi TB/ngày</small><b>'+f((R-C)/nd)+'</b></div></div>';
+  h+='<h3>Lãi theo ngày</h3><div class="box chart">';
+  for(var d=1;d<=n;d++){
+    var r2=S.days[mon+'-'+pad(d)],p=r2?Math.max(0,r2.r-r2.c):0;
+    h+='<div class="bw"><i class="'+(r2?'':'z')+'" style="height:'+(r2?Math.max(3,p/max*100):1)+'%"></i><em>'+((d===1||d%5===0)?d:'')+'</em></div>';
+  }
+  h+='</div><h3>Bán chạy trong tháng</h3><div class="box rank">';
+  var rk=S.drinks.map(function(x,i){return{n:x.n,q:dc[i]}}).concat(S.tops.map(function(x,i){return{n:x.n,q:tc[i]}})).sort(function(a,b){return b.q-a.q}),top=Math.max(1,rk[0].q);
+  rk.forEach(function(x){h+='<div class="rk"><span>'+x.n+'</span><div><i style="width:'+x.q/top*100+'%"></i></div><span>'+x.q+'</span></div>'});
+  h+='<div class="note">Theo size: '+S.sizes.map(function(s,j){return s.n+' '+sc[j]}).join(' · ')+'</div></div>';
+  h+='<h3>Chi tiết từng ngày</h3><div class="box dt"><table><thead><tr><th>Ngày</th><th>Ly</th><th>Bán</th><th>Vốn</th><th>Lãi</th></tr></thead><tbody>';
+  rows.forEach(function(key){
+    var r=S.days[key],wd=["CN","T2","T3","T4","T5","T6","T7"][new Date(y,m-1,+key.slice(8)).getDay()];
+    h+='<tr data-a="row" data-k="'+key+'"><td>'+vn(key)+' '+wd+'</td><td>'+r.q+'</td><td>'+f(r.r)+'</td><td>'+f(r.c)+'</td><td>'+f(r.r-r.c)+'</td></tr>';
+  });
+  h+='</tbody><tfoot><tr><td>Tổng</td><td>'+Q+'</td><td>'+f(R)+'</td><td>'+f(C)+'</td><td>'+f(R-C)+'</td></tr></tfoot></table></div>';
+  return h+'<p class="note">Chạm vào một ngày để xem hoặc sửa lại ngày đó. Giá vốn mới chỉ tính nguyên liệu, chưa gồm ly, nắp, mặt bằng, nhân công.</p>';
 }
-function totals(){
-  var q=0,r=0,c=0;
-  S.items.forEach(function(i){q+=i.q;r+=i.q*i.p;c+=i.q*i.c});
-  document.getElementById("tCups").textContent=q;
-  document.getElementById("tRev").textContent=f(r);
-  document.getElementById("tCost").textContent=f(c);
-  document.getElementById("tProfit").textContent=f(r-c);
+function render(){
+  document.querySelectorAll(".tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.t===tab)});
+  A.innerHTML=tab==="sell"?sell():stat();
 }
-document.getElementById("bEdit").onclick=function(){editing=!editing;this.classList.toggle("on",editing);this.textContent=editing?"Xong":"Sửa giá";render()};
-document.getElementById("bReset").onclick=function(){if(confirm("Xóa hết số ly hôm nay?")){S.items.forEach(function(i){i.q=0});save();render()}};
-document.getElementById("date").textContent=new Date().toLocaleDateString("vi-VN",{weekday:"long",day:"numeric",month:"numeric",year:"numeric"});
+document.querySelector(".tabs").onclick=function(e){var b=e.target.closest("button");if(b){tab=b.dataset.t;render();window.scrollTo(0,0)}};
+A.onclick=function(e){
+  var b=e.target.closest("[data-a]");if(!b)return;
+  var a=b.dataset.a,i=+b.dataset.i,j=+b.dataset.j,r,v;
+  if(a==="p"||a==="pm"){r=day();v=r.d[i][j]+(a==="p"?1:-1);if(v<0)return;r.d[i][j]=v;put(r)}
+  else if(a==="t"||a==="tm"){r=day();v=r.t[i]+(a==="t"?1:-1);if(v<0)return;r.t[i]=v;put(r)}
+  else if(a==="dd"){var d=new Date(cur+"T00:00:00");d.setDate(d.getDate()+(+b.dataset.n));cur=iso(d)}
+  else if(a==="today"){cur=iso(new Date())}
+  else if(a==="edit"){editing=!editing}
+  else if(a==="clr"){if(confirm("Xóa hết số ly của ngày "+vn(cur)+"?")){delete S.days[cur];save()}}
+  else if(a==="mm"){var t=new Date(+mon.slice(0,4),+mon.slice(5,7)-1+(+b.dataset.n),1);mon=iso(t).slice(0,7)}
+  else if(a==="row"){cur=b.dataset.k;tab="sell"}
+  render();
+};
+A.onchange=function(e){
+  var t=e.target;
+  if(t.id==="dt"){if(t.value){cur=t.value}render();return}
+  var fl=t.dataset.f;if(!fl)return;
+  var v=Math.max(0,parseFloat(t.value.replace(",","."))||0),i=+t.dataset.i;
+  if(fl==="sp")S.sizes[i].p=v;else if(fl==="sf")S.sizes[i].f=v;else if(fl==="dc")S.drinks[i].c=v;else if(fl==="tp")S.tops[i].p=v;else if(fl==="tc")S.tops[i].c=v;
+  if(S.days[cur])put(S.days[cur]);else save();
+  render();
+};
 load();render();
 </script>
 </body>
