@@ -62,15 +62,17 @@ h3{font-size:14px;margin:16px 0 8px}
 .dt tr[data-a]{cursor:pointer}
 .dt tfoot td{font-weight:bold;background:var(--tint)}
 .dt td:nth-child(n+2){text-align:right}.dt td:last-child{padding-right:10px;font-weight:bold}
+.st{font-size:11px;font-weight:normal;opacity:.8;margin-left:8px}
 .note{font-size:12px;color:var(--mut);line-height:1.5;margin:10px 0}
 </style>
 </head>
 <body>
-<div class="top"><div class="top-in"><h1>Heri Coffee</h1>
+<div class="top"><div class="top-in"><h1>Heri Coffee<span id="st" class="st"></span></h1>
 <div class="tabs"><button data-t="sell">Bán hàng</button><button data-t="stat">Thống kê</button></div></div></div>
 <main id="app"></main>
 <script>
-var KEY="pos_cafe_v3",S=null,tab="sell",editing=false,A=document.getElementById("app");
+var SHEET_URL="https://script.google.com/macros/s/AKfycby-RoeevnkPoOA4wfM5vcFCTg7C40SMDrlfsZF-LF65SySXjTJu1VmDlgvVOCxdfvG_/exec";/* dán link Web app Google Apps Script vào giữa 2 dấu ngoặc kép (xem hướng dẫn) */
+var KEY="pos_cafe_v3",S=null,tab="sell",editing=false,A=document.getElementById("app"),gen=0,busy=false,errf=false,timer=null;
 function pad(n){return n<10?"0"+n:""+n}
 function iso(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())}
 var cur=iso(new Date()),mon=cur.slice(0,7);
@@ -79,11 +81,11 @@ function k(n){return (n/1000)+"k"}
 function vn(s){return s.slice(8)+"/"+s.slice(5,7)}
 function def(){return{sizes:[{n:"Nhỏ",p:12000,f:0.75},{n:"Vừa",p:15000,f:1},{n:"Lớn",p:22000,f:1.5}],
  drinks:[["Cafe muối",3944],["Cf sữa tươi",6568],["Bạc xỉu",6171],["Cf đen",4250],["Cf sữa",5655],["Cacao",7347]].map(function(d){return{n:d[0],c:d[1]}}),
- tops:[{n:"Kem muối thêm",p:3000,c:1119},{n:"Cf đen thêm",p:3000,c:1417}],days:{}}}
+ tops:[{n:"Kem muối thêm",p:3000,c:1119},{n:"Cf đen thêm",p:3000,c:1417}],days:{},dirty:{},ds:false,linked:""}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function load(){
   try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-  if(!S||!S.days){S=def();migrate()}
+  if(!S||!S.days){S=def();migrate()}if(!S.dirty)S.dirty={};
 }
 function migrate(){
   try{var o=JSON.parse(localStorage.getItem("pos_cafe_v2"));if(!o||!o.sizes)return;
@@ -99,7 +101,7 @@ function calc(r){
   S.tops.forEach(function(t,i){var n=r.t[i];q+=n;rev+=n*t.p;c+=n*t.c});
   r.q=q;r.r=rev;r.c=c;return r;
 }
-function put(r){calc(r);if(r.q)S.days[cur]=r;else delete S.days[cur];save()}
+function put(r){calc(r);if(r.q)S.days[cur]=r;else delete S.days[cur];mark(cur)}
 function cell(a,q,i,j){
   return '<td><div class="c"><button class="n'+(q?' on':'')+'" data-a="'+a+'" data-i="'+i+'" data-j="'+j+'">'+q+'</button><button class="m" data-a="'+a+'m" data-i="'+i+'" data-j="'+j+'" aria-label="Trừ">−</button></div></td>';
 }
@@ -119,7 +121,7 @@ function sell(){
     h+='</tbody></table></div><div class="box"><table><thead><tr><th>Món</th><th>Giá bán</th><th>Giá vốn</th></tr></thead><tbody>';
     S.drinks.forEach(function(d,i){h+='<tr><td>'+d.n+'</td><td>theo size</td><td><input class="e" inputmode="numeric" value="'+d.c+'" data-f="dc" data-i="'+i+'"></td></tr>'});
     S.tops.forEach(function(t,i){h+='<tr><td>'+t.n+'</td><td><input class="e" inputmode="numeric" value="'+t.p+'" data-f="tp" data-i="'+i+'"></td><td><input class="e" inputmode="numeric" value="'+t.c+'" data-f="tc" data-i="'+i+'"></td></tr>'});
-    h+='</tbody></table></div><p class="note">Giá vốn đồ uống là của size vừa, size nhỏ/lớn nhân theo hệ số. Đổi giá chỉ tính lại ngày đang xem, các ngày cũ giữ nguyên.</p>';
+    h+='</tbody></table></div>'+linkBox()+'<p class="note">Giá vốn đồ uống là của size vừa, size nhỏ/lớn nhân theo hệ số. Đổi giá chỉ tính lại ngày đang xem, các ngày cũ giữ nguyên.</p>';
   }
   return h+'<div class="tool"><button data-a="edit">'+(editing?'Xong':'Sửa giá')+'</button><button data-a="clr">Xóa số ngày này</button></div>';
 }
@@ -153,7 +155,7 @@ function stat(){
 }
 function render(){
   document.querySelectorAll(".tabs button").forEach(function(b){b.classList.toggle("on",b.dataset.t===tab)});
-  A.innerHTML=tab==="sell"?sell():stat();
+  A.innerHTML=tab==="sell"?sell():stat();st();
 }
 document.querySelector(".tabs").onclick=function(e){var b=e.target.closest("button");if(b){tab=b.dataset.t;render();window.scrollTo(0,0)}};
 A.onclick=function(e){
@@ -164,7 +166,7 @@ A.onclick=function(e){
   else if(a==="dd"){var d=new Date(cur+"T00:00:00");d.setDate(d.getDate()+(+b.dataset.n));cur=iso(d)}
   else if(a==="today"){cur=iso(new Date())}
   else if(a==="edit"){editing=!editing}
-  else if(a==="clr"){if(confirm("Xóa hết số ly của ngày "+vn(cur)+"?")){delete S.days[cur];save()}}
+  else if(a==="clr"){if(confirm("Xóa hết số ly của ngày "+vn(cur)+"?")){delete S.days[cur];mark(cur)}}
   else if(a==="mm"){var t=new Date(+mon.slice(0,4),+mon.slice(5,7)-1+(+b.dataset.n),1);mon=iso(t).slice(0,7)}
   else if(a==="row"){cur=b.dataset.k;tab="sell"}
   render();
@@ -173,12 +175,49 @@ A.onchange=function(e){
   var t=e.target;
   if(t.id==="dt"){if(t.value){cur=t.value}render();return}
   var fl=t.dataset.f;if(!fl)return;
+  if(fl==="url"){try{localStorage.setItem("pos_cafe_url",t.value.trim())}catch(e){}S.linked="";save();pull();render();return}
   var v=Math.max(0,parseFloat(t.value.replace(",","."))||0),i=+t.dataset.i;
   if(fl==="sp")S.sizes[i].p=v;else if(fl==="sf")S.sizes[i].f=v;else if(fl==="dc")S.drinks[i].c=v;else if(fl==="tp")S.tops[i].p=v;else if(fl==="tc")S.tops[i].c=v;
-  if(S.days[cur])put(S.days[cur]);else save();
+  if(url())S.ds=true;if(S.days[cur])put(S.days[cur]);else{gen++;save();push()}
   render();
 };
-load();render();
+
+function url(){if(SHEET_URL)return SHEET_URL;try{return localStorage.getItem("pos_cafe_url")||""}catch(e){return ""}}
+function linkBox(){return SHEET_URL?'':'<div class="box"><table><thead><tr><th>Link Google Sheets (đồng bộ nhiều máy)</th></tr></thead><tbody><tr><td><input class="e" placeholder="Dán link Web app, kết thúc bằng /exec" value="'+url()+'" data-f="url"></td></tr></tbody></table></div>'}
+function cfg(){return{sizes:S.sizes,drinks:S.drinks,tops:S.tops}}
+function pending(){return S.ds||Object.keys(S.dirty).length>0}
+function st(){var e=document.getElementById("st");if(!e)return;
+  e.textContent=!url()?"· chỉ lưu trên máy này":errf?"· ⚠ lỗi mạng, sẽ thử lại":(busy||pending())?"· đang lưu…":"· ✓ đã đồng bộ"}
+function mark(k){gen++;if(url())S.dirty[k]=1;save();push();st()}
+function push(){
+  var u=url();if(!u||busy)return;
+  var body,done,ks=Object.keys(S.dirty);
+  if(S.ds){var c=cfg(),cs=JSON.stringify(c);body={action:"settings",settings:c};done=function(){if(JSON.stringify(cfg())===cs)S.ds=false}}
+  else if(ks.length){var k=ks[0],rec=S.days[k]||null,rs=JSON.stringify(rec);body=rec?{action:"day",date:k,rec:rec}:{action:"del",date:k};
+    done=function(){if(JSON.stringify(S.days[k]||null)===rs)delete S.dirty[k]}}
+  else{st();return}
+  busy=true;st();
+  fetch(u,{method:"POST",body:JSON.stringify(body)}).then(function(r){return r.json()}).then(function(x){
+    if(!x.ok)throw 0;done();gen++;busy=false;errf=false;save();push();
+  }).catch(function(){busy=false;errf=true;st();clearTimeout(timer);timer=setTimeout(push,6000)});
+}
+function pull(){
+  var u=url();if(!u)return;var g=gen;
+  fetch(u+(u.indexOf("?")<0?"?":"&")+"t="+Date.now()).then(function(r){return r.json()}).then(function(x){
+    if(!x.ok)throw 0;if(g!==gen)return;
+    var first=S.linked!==u;
+    if(!x.settings){S.ds=true}
+    else{if(first)S.ds=false;if(!S.ds){S.sizes=x.settings.sizes;S.drinks=x.settings.drinks;S.tops=x.settings.tops}}
+    Object.keys(x.days).forEach(function(k){if(!S.dirty[k])S.days[k]=x.days[k]});
+    Object.keys(S.days).forEach(function(k){if(!S.dirty[k]&&!x.days[k]){if(first||!x.settings)S.dirty[k]=1;else delete S.days[k]}});
+    S.linked=u;errf=false;save();
+    var a=document.activeElement;if(a&&a.tagName==="INPUT"&&a.id!=="dt")st();else render();
+    push();
+  }).catch(function(){errf=true;st()});
+}
+load();render();push();pull();
+setInterval(pull,20000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)pull()});
 </script>
 </body>
 </html>
